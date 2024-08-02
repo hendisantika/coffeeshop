@@ -65,7 +65,7 @@
                     <artifactId>mongo-java-driver</artifactId>
                 </exclusion>
             </exclusions>
-            <version>4.1.4</version>
+            <version>5.1.0</version>
         </dependency>
 
         <dependency>
