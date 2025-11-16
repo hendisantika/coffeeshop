@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::content})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Create New Order</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/ui/orders/save}">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="customerName">Customer Name</label>
+                                <input class="form-control" id="customerName" name="customerName" required type="text">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="customerEmail">Customer Email</label>
+                                <input class="form-control" id="customerEmail" name="customerEmail" required
+                                       type="email">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="storeId">Store</label>
+                            <select class="form-select" id="storeId" name="storeId" required>
+                                <option value="">Select Store</option>
+                                <option th:each="store : ${stores}"
+                                        th:text="${store.name + ' - ' + store.address.city}"
+                                        th:value="${store.id}"></option>
+                            </select>
+                        </div>
+
+                        <h5 class="mt-4 mb-3">Order Items</h5>
+                        <div class="alert alert-warning" th:if="${#lists.isEmpty(products)}">
+                            No products available. Please add some products first.
+                        </div>
+                        <div class="table-responsive" th:unless="${#lists.isEmpty(products)}">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Category</th>
+                                    <th>Size</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="product : ${products}">
+                                    <td th:text="${product.name}"></td>
+                                    <td th:text="${product.category?.name}"></td>
+                                    <td th:text="${product.size}"></td>
+                                    <td th:text="${'$' + #numbers.formatDecimal(product.price, 1, 2)}"></td>
+                                    <td style="width: 120px;">
+                                        <input name="productIds" th:value="${product.id}" type="hidden">
+                                        <input class="form-control form-control-sm" min="0"
+                                               name="quantities" type="number" value="0">
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button class="btn btn-coffee" th:disabled="${#lists.isEmpty(products)}"
+                                    type="submit">Create Order
+                            </button>
+                            <a class="btn btn-secondary" th:href="@{/ui/orders}">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
