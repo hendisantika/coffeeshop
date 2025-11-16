@@ -13,6 +13,7 @@ backend supporting full CRUD operations for stores, products, categories, and or
 - **Dashboard** - Real-time statistics and recent orders overview
 - **REST API** - Exposes data via Spring Data REST with HATEOAS support
 - **MongoDB Integration** - Uses Spring Data MongoDB for data persistence
+- **Docker Compose Integration** - Automatic MongoDB container lifecycle management
 - **Geospatial Indexing** - Supports location-based queries with 2DSphere indexing
 - **Sample Data** - Auto-loads sample stores, categories, and products on startup
 - **HAL Explorer** - Built-in API browser for exploring REST endpoints
@@ -23,6 +24,7 @@ backend supporting full CRUD operations for stores, products, categories, and or
 - Spring Boot 3.5.7
 - Spring Data MongoDB
 - Spring Data REST
+- Spring Boot Docker Compose (automatic container management)
 - Thymeleaf
 - Bootstrap 5.3
 - jQuery
@@ -38,39 +40,54 @@ backend supporting full CRUD operations for stores, products, categories, and or
 
 ## Getting Started
 
-### 1. Start MongoDB
+### Quick Start (Recommended)
 
-Using Docker:
+The application uses **Spring Boot Docker Compose** integration, which automatically manages MongoDB container
+lifecycle.
 
-```bash
-docker run -d --name coffeeshop-mongo -p 27017:27017 mongo:7.0
-```
-
-Or use Docker Compose:
-
-```bash
-docker-compose up -d
-```
-
-### 2. Build the Application
-
-```bash
-./mvnw clean package -DskipTests
-```
-
-### 3. Run the Application
-
-```bash
-java -jar target/coffeeshop-0.0.1-SNAPSHOT.jar
-```
-
-Or using Maven:
+**Just run:**
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-The application will start on `http://localhost:8080`
+That's it! Spring Boot will automatically:
+
+1. Detect the `compose.yaml` file
+2. Start the MongoDB container
+3. Wait for MongoDB to be healthy
+4. Connect to the database
+5. Initialize sample data
+
+The application will be available at `http://localhost:8080`
+
+When you stop the application, MongoDB container is automatically stopped as well.
+
+### Manual Setup (Alternative)
+
+If you prefer to manage MongoDB manually:
+
+1. **Disable Docker Compose integration** in `application.properties`:
+   ```properties
+   spring.docker.compose.enabled=false
+   ```
+
+2. **Start MongoDB manually:**
+   ```bash
+   docker run -d --name coffeeshop-mongo -p 27017:27017 mongo:7.0
+   ```
+
+3. **Run the application:**
+   ```bash
+   ./mvnw spring-boot:run
+   ```
+
+### Building for Deployment
+
+```bash
+./mvnw clean package -DskipTests
+java -jar target/coffeeshop-0.0.1-SNAPSHOT.jar
+```
 
 ## Web UI
 
@@ -230,14 +247,26 @@ Current configuration in `application.properties`:
 
 ```properties
 # MongoDB Configuration
-spring.data.mongodb.uri=mongodb://localhost:27017/coffeeshop
+spring.data.mongodb.database=coffeeshop
+spring.data.mongodb.host=localhost
+spring.data.mongodb.port=27017
+
 # Server Configuration
 server.port=8080
+
 # Thymeleaf Configuration
 spring.thymeleaf.cache=false
 spring.thymeleaf.check-template-location=true
+
 # Spring Data REST Configuration
 spring.data.rest.base-path=/api
+
+# Docker Compose Configuration
+spring.docker.compose.enabled=true
+spring.docker.compose.lifecycle-management=start_and_stop
+spring.docker.compose.start.command=up
+spring.docker.compose.stop.command=down
+spring.docker.compose.stop.timeout=PT1M
 ```
 
 Key settings:
@@ -246,6 +275,7 @@ Key settings:
 - REST API base path: `/api`
 - Thymeleaf caching disabled for development
 - Server port: `8080`
+- Docker Compose auto-management enabled with start/stop lifecycle
 
 ## Running Tests
 
@@ -263,33 +293,39 @@ Tests require Docker to be running (uses TestContainers):
 
 The executable JAR will be created at `target/coffeeshop-0.0.1-SNAPSHOT.jar`
 
-## Docker Compose (Optional)
+## Docker Compose
 
-Create a `docker-compose.yml`:
+The project includes a `compose.yaml` file that is automatically managed by Spring Boot:
 
 ```yaml
-version: '3.8'
 services:
   mongodb:
-    image: mongo:7.0
-    container_name: coffeeshop-mongo
+    image: 'mongo:7.0'
+    container_name: coffeeshop-mongodb
+    environment:
+      - 'MONGO_INITDB_DATABASE=coffeeshop'
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongodb_data:/data/db
-
-  app:
-    build: .
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mongodb
-    environment:
-      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/coffeeshop
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 volumes:
   mongodb_data:
+    driver: local
 ```
+
+Features:
+
+- **Automatic lifecycle management** - Container starts/stops with the application
+- **Health checks** - Ensures MongoDB is ready before application connects
+- **Persistent volume** - Data is preserved between restarts
+- **No manual Docker commands needed** - Spring Boot handles everything
 
 ## License
 

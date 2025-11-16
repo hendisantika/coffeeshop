@@ -1,5 +1,7 @@
 target/
 !.mvn/wrapper/maven-wrapper.jar
+mongodb_data
+logs
 
 ### STS ###
 .apt_generated
