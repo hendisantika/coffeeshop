@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::content})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0" th:text="${category.id != null ? 'Edit Category' : 'Add New Category'}"></h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/ui/categories/save}" th:object="${category}">
+                        <input th:field="*{id}" type="hidden">
+                        <div class="mb-3">
+                            <label class="form-label" for="name">Category Name</label>
+                            <input class="form-control" id="name" required th:field="*{name}" type="text">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="description">Description</label>
+                            <textarea class="form-control" id="description" rows="3"
+                                      th:field="*{description}"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="icon">Icon (emoji)</label>
+                            <input class="form-control" id="icon" placeholder="e.g., ☕ 🥐 🧊" th:field="*{icon}"
+                                   type="text">
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-coffee" type="submit">Save Category</button>
+                            <a class="btn btn-secondary" th:href="@{/ui/categories}">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
