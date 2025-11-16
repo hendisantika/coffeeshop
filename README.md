@@ -103,15 +103,32 @@ Access the web interface at `http://localhost:8080`
 
 ### Screenshots
 
-The UI features:
+#### Dashboard
 
-- Modern gradient navbar with navigation
-- Card-based dashboard with statistics
-- Responsive tables with actions
-- Form validation
-- Flash messages for operations
-- Status badges for orders
-- Category filtering for products
+![Dashboard](img/dashboard.png)
+
+#### Store Management
+
+![Stores List](img/stores.png)
+![Add New Store](img/add-new-store.png)
+
+#### Category Management
+
+![Categories List](img/categories.png)
+![Add New Category](img/add-new-category.png)
+
+#### Product Management
+
+![Products List](img/products.png)
+![Add New Product](img/add-new-product.png)
+![Product Details](img/product-details.png)
+
+#### Order Management
+
+![Orders List](img/orders.png)
+![Add New Order](img/add-new-order.png)
+![Order Details](img/order-details.png)
+![Order View](img/order1.png)
 
 ## REST API Endpoints
 
