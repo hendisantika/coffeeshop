@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::content})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Stores</h2>
+        <a class="btn btn-coffee" th:href="@{/ui/stores/new}">Add New Store</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="text-center text-muted py-4" th:if="${#lists.isEmpty(stores)}">
+                <p>No stores found. Add your first store!</p>
+            </div>
+            <div class="table-responsive" th:unless="${#lists.isEmpty(stores)}">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>City</th>
+                        <th>Zip</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="store : ${stores}">
+                        <td th:text="${store.name}"></td>
+                        <td th:text="${store.address.street}"></td>
+                        <td th:text="${store.address.city}"></td>
+                        <td th:text="${store.address.zip}"></td>
+                        <td>
+                            <small class="text-muted"
+                                   th:text="${store.address.location.x + ', ' + store.address.location.y}"></small>
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary"
+                               th:href="@{/ui/stores/{id}(id=${store.id})}">View</a>
+                            <a class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Are you sure you want to delete this store?')"
+                               th:href="@{/ui/stores/{id}/delete(id=${store.id})}">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
