@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::content})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0" th:text="${product.id != null ? 'Edit Product' : 'Add New Product'}"></h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/ui/products/save}" th:object="${product}">
+                        <input th:field="*{id}" type="hidden">
+                        <div class="mb-3">
+                            <label class="form-label" for="name">Product Name</label>
+                            <input class="form-control" id="name" required th:field="*{name}" type="text">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="description">Description</label>
+                            <textarea class="form-control" id="description" rows="3"
+                                      th:field="*{description}"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="price">Price ($)</label>
+                                <input class="form-control" id="price" min="0" required step="0.01"
+                                       th:field="*{price}" type="number">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="size">Size</label>
+                                <select class="form-select" id="size" th:field="*{size}">
+                                    <option value="Small">Small</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Large">Large</option>
+                                    <option value="Extra Large">Extra Large</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label" for="categoryId">Category</label>
+                                <select class="form-select" id="categoryId" name="categoryId" required>
+                                    <option value="">Select Category</option>
+                                    <option th:each="category : ${categories}"
+                                            th:selected="${product.category != null and product.category.id == category.id}"
+                                            th:text="${category.name}"
+                                            th:value="${category.id}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="imageUrl">Image URL (optional)</label>
+                            <input class="form-control" id="imageUrl" th:field="*{imageUrl}" type="url">
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input class="form-check-input" id="available" th:field="*{available}" type="checkbox">
+                            <label class="form-check-label" for="available">Available for sale</label>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-coffee" type="submit">Save Product</button>
+                            <a class="btn btn-secondary" th:href="@{/ui/products}">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
