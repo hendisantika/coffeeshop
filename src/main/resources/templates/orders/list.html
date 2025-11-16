@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::content})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Orders</h2>
+        <a class="btn btn-coffee" th:href="@{/ui/orders/new}">Create New Order</a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form class="row g-3 align-items-center" method="get" th:action="@{/ui/orders}">
+                <div class="col-auto">
+                    <label class="form-label" for="status">Filter by Status:</label>
+                </div>
+                <div class="col-auto">
+                    <select class="form-select" id="status" name="status">
+                        <option value="">All Statuses</option>
+                        <option th:each="st : ${statuses}"
+                                th:selected="${st.name() == selectedStatus}"
+                                th:text="${st.name()}"
+                                th:value="${st.name()}"></option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-outline-primary" type="submit">Filter</button>
+                    <a class="btn btn-outline-secondary" th:href="@{/ui/orders}">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="text-center text-muted py-4" th:if="${#lists.isEmpty(orders)}">
+                <p>No orders found. Create your first order!</p>
+            </div>
+            <div class="table-responsive" th:unless="${#lists.isEmpty(orders)}">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Store</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td>
+                            <a th:href="@{/ui/orders/{id}(id=${order.id})}"
+                               th:text="${#strings.substring(order.id, 0, 8) + '...'}"></a>
+                        </td>
+                        <td th:text="${order.customerName}"></td>
+                        <td th:text="${order.customerEmail}"></td>
+                        <td th:text="${order.store.name}"></td>
+                        <td th:text="${#lists.size(order.items)}"></td>
+                        <td th:text="${'$' + #numbers.formatDecimal(order.totalAmount, 1, 2)}"></td>
+                        <td>
+                            <span class="badge status-badge"
+                                  th:classappend="${order.status.name() == 'PENDING' ? 'bg-warning' :
+                                                  order.status.name() == 'CONFIRMED' ? 'bg-info' :
+                                                  order.status.name() == 'PREPARING' ? 'bg-primary' :
+                                                  order.status.name() == 'READY' ? 'bg-success' :
+                                                  order.status.name() == 'COMPLETED' ? 'bg-secondary' : 'bg-danger'}"
+                                  th:text="${order.status}"></span>
+                        </td>
+                        <td th:text="${#temporals.format(order.orderDate, 'MMM dd, HH:mm')}"></td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary"
+                               th:href="@{/ui/orders/{id}(id=${order.id})}">View</a>
+                            <a class="btn btn-sm btn-outline-danger"
+                               onclick="return confirm('Are you sure you want to delete this order?')"
+                               th:href="@{/ui/orders/{id}/delete(id=${order.id})}">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
