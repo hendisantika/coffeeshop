@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::content})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">Store Details</h4>
+                    <a class="btn btn-outline-secondary btn-sm" th:href="@{/ui/stores}">Back to List</a>
+                </div>
+                <div class="card-body" th:if="${store}">
+                    <dl class="row">
+                        <dt class="col-sm-3">Store ID</dt>
+                        <dd class="col-sm-9" th:text="${store.id}"></dd>
+
+                        <dt class="col-sm-3">Name</dt>
+                        <dd class="col-sm-9" th:text="${store.name}"></dd>
+
+                        <dt class="col-sm-3">Street</dt>
+                        <dd class="col-sm-9" th:text="${store.address.street}"></dd>
+
+                        <dt class="col-sm-3">City</dt>
+                        <dd class="col-sm-9" th:text="${store.address.city}"></dd>
+
+                        <dt class="col-sm-3">Zip Code</dt>
+                        <dd class="col-sm-9" th:text="${store.address.zip}"></dd>
+
+                        <dt class="col-sm-3">Coordinates</dt>
+                        <dd class="col-sm-9">
+                            <span th:text="${'Lng: ' + store.address.location.x + ', Lat: ' + store.address.location.y}"></span>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
