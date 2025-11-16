@@ -1,16 +1,23 @@
 package com.hendisantika.coffeshop;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-@RunWith(SpringRunner.class)
 @SpringBootTest
-public class CoffeshopApplicationTests {
+@Testcontainers
+class CoffeshopApplicationTests {
+
+    @Container
+    @ServiceConnection
+    static MongoDBContainer mongoDBContainer = new MongoDBContainer("mongo:7.0");
 
     @Test
-    public void contextLoads() {
+    void contextLoads() {
     }
 
 }
+

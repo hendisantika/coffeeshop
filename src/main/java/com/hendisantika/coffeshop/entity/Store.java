@@ -1,7 +1,11 @@
 package com.hendisantika.coffeshop.entity;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.geo.Point;
 import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -21,32 +25,39 @@ import static org.springframework.data.mongodb.core.index.GeoSpatialIndexType.GE
  * To change this template use File | Settings | File Templates.
  */
 
-@Value
+@Getter
+@NoArgsConstructor(force = true)
+@AllArgsConstructor
+@ToString
 @Document
 public class Store {
     @Id
-    UUID id = UUID.randomUUID();
-    String name;
-    Address address;
+    private UUID id;
+    private String name;
+    private Address address;
+
+    @PersistenceCreator
+    public Store(String name, Address address) {
+        this.id = UUID.randomUUID();
+        this.name = name;
+        this.address = address;
+    }
 
     /**
      * Value object to represent an {@link Address}.
      *
      * @author Oliver Gierke
      */
-    @Value
+    @Getter
+    @NoArgsConstructor(force = true)
+    @AllArgsConstructor
+    @ToString
     public static class Address {
 
-        String street, city, zip;
+        private String street;
+        private String city;
+        private String zip;
         @GeoSpatialIndexed(type = GEO_2DSPHERE)
-        Point location;
-
-        /*
-         * (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        public String toString() {
-            return String.format("%s, %s %s", street, zip, city);
-        }
+        private Point location;
     }
 }
