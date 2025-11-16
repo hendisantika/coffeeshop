@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html th:replace="~{fragments/layout :: layout(~{::content})}"
+      xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="content">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Add New Store</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" th:action="@{/ui/stores/save}" th:object="${store}">
+                        <div class="mb-3">
+                            <label class="form-label" for="name">Store Name</label>
+                            <input class="form-control" id="name" required th:field="*{name}" type="text">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="street">Street Address</label>
+                            <input class="form-control" id="street" required th:field="*{street}" type="text">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="city">City</label>
+                                <input class="form-control" id="city" required th:field="*{city}" type="text">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="zip">Zip Code</label>
+                                <input class="form-control" id="zip" required th:field="*{zip}" type="text">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="longitude">Longitude</label>
+                                <input class="form-control" id="longitude" required step="0.0001"
+                                       th:field="*{longitude}" type="number">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="latitude">Latitude</label>
+                                <input class="form-control" id="latitude" required step="0.0001"
+                                       th:field="*{latitude}" type="number">
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-coffee" type="submit">Save Store</button>
+                            <a class="btn btn-secondary" th:href="@{/ui/stores}">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
