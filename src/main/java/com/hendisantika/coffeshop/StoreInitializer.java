@@ -3,11 +3,11 @@ package com.hendisantika.coffeshop;
 import com.hendisantika.coffeshop.entity.Store;
 import com.hendisantika.coffeshop.repository.StoreRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.item.ExecutionContext;
-import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.separator.DefaultRecordSeparatorPolicy;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.infrastructure.item.ExecutionContext;
+import org.springframework.batch.infrastructure.item.file.FlatFileItemReader;
+import org.springframework.batch.infrastructure.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.infrastructure.item.file.separator.DefaultRecordSeparatorPolicy;
+import org.springframework.batch.infrastructure.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.geo.Point;
@@ -59,9 +59,6 @@ public class StoreInitializer {
         String line = scanner.nextLine();
         scanner.close();
 
-        FlatFileItemReader<Store> itemReader = new FlatFileItemReader<Store>();
-        itemReader.setResource(resource);
-
         // DelimitedLineTokenizer defaults to comma as its delimiter
         DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer();
         tokenizer.setNames(line.split(","));
@@ -78,7 +75,8 @@ public class StoreInitializer {
         });
 
         lineMapper.setLineTokenizer(tokenizer);
-        itemReader.setLineMapper(lineMapper);
+
+        FlatFileItemReader<Store> itemReader = new FlatFileItemReader<>(resource, lineMapper);
         itemReader.setRecordSeparatorPolicy(new DefaultRecordSeparatorPolicy());
         itemReader.setLinesToSkip(1);
         itemReader.open(new ExecutionContext());
