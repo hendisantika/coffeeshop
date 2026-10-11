@@ -1,5 +1,7 @@
 # Coffee Shop
 
+[![Java CI with Maven](https://github.com/hendisantika/coffeeshop/actions/workflows/maven.yml/badge.svg)](https://github.com/hendisantika/coffeeshop/actions/workflows/maven.yml)
+
 A comprehensive Spring Boot application for coffee shop management with a modern Thymeleaf UI, REST API, and MongoDB
 backend supporting full CRUD operations for stores, products, categories, and orders.
 
@@ -20,22 +22,23 @@ backend supporting full CRUD operations for stores, products, categories, and or
 
 ## Tech Stack
 
-- Java 21
-- Spring Boot 3.5.7
+- Java 25
+- Spring Boot 4.1.0
 - Spring Data MongoDB
 - Spring Data REST
 - Spring Boot Docker Compose (automatic container management)
+- Spring Batch 6 (CSV import of sample stores)
 - Thymeleaf
 - Bootstrap 5.3
 - jQuery
 - Lombok
 - MongoDB 7.0
-- TestContainers (for testing)
+- Testcontainers 2 (for testing)
 
 ## Prerequisites
 
-- JDK 21 or higher
-- Maven 3.6.3 or higher
+- JDK 25 or higher
+- Maven 3.9+ (or use the bundled Maven Wrapper `./mvnw`, which downloads Maven 3.9.11)
 - Docker (for running MongoDB)
 
 ## Getting Started
@@ -88,6 +91,9 @@ If you prefer to manage MongoDB manually:
 ./mvnw clean package -DskipTests
 java -jar target/coffeeshop-0.0.1-SNAPSHOT.jar
 ```
+
+> **Note:** Spring Boot excludes the Docker Compose integration from the packaged JAR, so MongoDB must already be
+> running (e.g. `docker compose up -d`) before starting the application with `java -jar`.
 
 ## Web UI
 
@@ -209,7 +215,7 @@ curl "http://localhost:8080/api/stores?page=0&size=5&sort=name,asc"
 Access the HAL Explorer at:
 
 ```
-http://localhost:8080/explorer
+http://localhost:8080/api/explorer
 ```
 
 This provides an interactive UI to explore and test the REST API.
@@ -264,9 +270,10 @@ Current configuration in `application.properties`:
 
 ```properties
 # MongoDB Configuration
-spring.data.mongodb.database=coffeeshop
-spring.data.mongodb.host=localhost
-spring.data.mongodb.port=27017
+spring.mongodb.database=coffeeshop
+spring.mongodb.host=localhost
+spring.mongodb.port=27017
+spring.mongodb.representation.uuid=java-legacy
 
 # Server Configuration
 server.port=8080
@@ -289,6 +296,7 @@ spring.docker.compose.stop.timeout=PT1M
 Key settings:
 
 - MongoDB database: `coffeeshop`
+- UUID representation: `java-legacy` (Spring Boot 4 no longer sets a default; required because `Store` uses `UUID` ids)
 - REST API base path: `/api`
 - Thymeleaf caching disabled for development
 - Server port: `8080`
@@ -324,9 +332,9 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - mongodb_data:/data/db
+      - ./mongodb_data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -341,8 +349,13 @@ Features:
 
 - **Automatic lifecycle management** - Container starts/stops with the application
 - **Health checks** - Ensures MongoDB is ready before application connects
-- **Persistent volume** - Data is preserved between restarts
+- **Persistent data** - Data is stored in `./mongodb_data` and preserved between restarts
 - **No manual Docker commands needed** - Spring Boot handles everything
+
+## Continuous Integration
+
+GitHub Actions ([`.github/workflows/maven.yml`](.github/workflows/maven.yml)) builds and tests the project on every push
+and pull request to `master` using Temurin JDK 25, then submits the Maven dependency graph for Dependabot alerts.
 
 ## License
 
